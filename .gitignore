@@ -1,0 +1,29 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userprefs
+
+# Build results
+[Bb]in/
+[Oo]bj/
+
+# MSTest test Results
+*.TestResults
+
+# NUnit
+*.VisualState.xml
+TestResult.xml
+
+# Build results of an analysis (including FxCop)
+[Bb]in/
+[Oo]bj/
+
+# Dotnet
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Other
+Thumbs.db
+*.DS_Store

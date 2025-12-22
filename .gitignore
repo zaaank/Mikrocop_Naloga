@@ -27,3 +27,7 @@ artifacts/
 # Other
 Thumbs.db
 *.DS_Store
+
+# Logs
+*.log
+build_error.log

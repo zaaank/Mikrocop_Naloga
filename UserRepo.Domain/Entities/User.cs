@@ -1,13 +1,11 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using UserRepo.Domain.Common;
 
 namespace UserRepo.Domain.Entities
 {
-    public class User
+    public class User : Entity
     {
-        [Key]
-        public Guid Id { get; set; } = Guid.NewGuid();
-
         [Required]
         [MaxLength(100)]
         public string UserName { get; set; } = string.Empty;

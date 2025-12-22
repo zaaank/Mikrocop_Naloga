@@ -7,9 +7,7 @@ using UserRepo.Contracts.Responses;
 
 namespace UserRepo.API.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class UsersController : ControllerBase
+    public class UsersController : ApiController
     {
         private readonly IUserService _userService;
 
@@ -21,59 +19,52 @@ namespace UserRepo.API.Controllers
         [HttpPost]
         public async Task<ActionResult<UserResponse>> CreateUser([FromBody] CreateUserRequest request)
         {
-            try
+            var result = await _userService.CreateUserAsync(request);
+            
+            if (result.IsSuccess)
             {
-                var createdUser = await _userService.CreateUserAsync(request);
-                return CreatedAtAction(nameof(GetUser), new { id = createdUser.Id }, createdUser);
+                return CreatedAtAction(nameof(GetUser), new { id = result.Value.Id }, result.Value);
             }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+
+            return HandleFailure(result);
         }
 
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<UserResponse>> GetUser(Guid id)
         {
-            var user = await _userService.GetUserAsync(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-            return Ok(user);
+            return HandleResult(await _userService.GetUserAsync(id));
         }
 
         [HttpPut("{id:guid}")]
         public async Task<ActionResult<UserResponse>> UpdateUser(Guid id, [FromBody] UpdateUserRequest request)
         {
-            var updatedUser = await _userService.UpdateUserAsync(id, request);
-            if (updatedUser == null)
-            {
-                return NotFound();
-            }
-            return Ok(updatedUser);
+            return HandleResult(await _userService.UpdateUserAsync(id, request));
         }
 
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteUser(Guid id)
         {
-            var deleted = await _userService.DeleteUserAsync(id);
-            if (!deleted)
+            var result = await _userService.DeleteUserAsync(id);
+            
+            if (result.IsSuccess)
             {
-                return NotFound();
+                return NoContent();
             }
-            return NoContent();
+
+            return HandleFailure(result);
         }
 
         [HttpPost("validate-password")]
         public async Task<IActionResult> ValidatePassword([FromBody] ValidatePasswordRequest request)
         {
-            var isValid = await _userService.ValidatePasswordAsync(request.UserName, request.Password);
-            if (!isValid)
+            var result = await _userService.ValidatePasswordAsync(request.UserName, request.Password);
+            
+            if (result.IsSuccess)
             {
-                return Unauthorized("Invalid username or password.");
+               return Ok("Password is valid.");
             }
-            return Ok("Password is valid.");
+
+            return HandleFailure(result);
         }
     }
 }

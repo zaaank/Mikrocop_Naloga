@@ -36,7 +36,7 @@ public class ExceptionHandlingMiddleware
         var response = new ErrorResponse(
             "InternalServerError", 
             "An unexpected error occurred.", 
-            exception.Message // Caution: leaking exception details in prod isn't recommended, verify policy.
+            exception.Message // Here we should be carefull if we really want to leak Message on PROD env.
         );
 
         return context.Response.WriteAsync(JsonSerializer.Serialize(response));

@@ -1,5 +1,7 @@
 using System;
 using System.Threading.Tasks;
+using UserRepo.Application.Common;
+using UserRepo.Application.Errors;
 using UserRepo.Application.Interfaces;
 using UserRepo.Contracts.Requests;
 using UserRepo.Contracts.Responses;
@@ -19,12 +21,11 @@ namespace UserRepo.Application.Services
             _passwordService = passwordService;
         }
 
-        public async Task<UserResponse> CreateUserAsync(CreateUserRequest request)
+        public async Task<Result<UserResponse>> CreateUserAsync(CreateUserRequest request)
         {
-            // Basic validation (could be moved to FluentValidation)
             if (await _userRepository.GetByUserNameAsync(request.UserName) != null)
             {
-                throw new InvalidOperationException("Username already exists.");
+                return UserErrors.DuplicateUsername;
             }
 
             var user = new User
@@ -43,22 +44,26 @@ namespace UserRepo.Application.Services
             return MapToResponse(user);
         }
 
-        public async Task<UserResponse?> GetUserAsync(Guid id)
+        public async Task<Result<UserResponse>> GetUserAsync(Guid id)
         {
             var user = await _userRepository.GetByIdAsync(id);
-            return user == null ? null : MapToResponse(user);
+            if (user == null) return UserErrors.NotFound;
+
+            return MapToResponse(user);
         }
         
-        public async Task<UserResponse?> GetUserByUserNameAsync(string userName)
+        public async Task<Result<UserResponse>> GetUserByUserNameAsync(string userName)
         {
             var user = await _userRepository.GetByUserNameAsync(userName);
-            return user == null ? null : MapToResponse(user);
+            if (user == null) return UserErrors.NotFound;
+
+            return MapToResponse(user);
         }
 
-        public async Task<UserResponse?> UpdateUserAsync(Guid id, UpdateUserRequest request)
+        public async Task<Result<UserResponse>> UpdateUserAsync(Guid id, UpdateUserRequest request)
         {
             var user = await _userRepository.GetByIdAsync(id);
-            if (user == null) return null;
+            if (user == null) return UserErrors.NotFound;
 
             user.FullName = request.FullName;
             user.Email = request.Email;
@@ -71,21 +76,24 @@ namespace UserRepo.Application.Services
             return MapToResponse(user);
         }
 
-        public async Task<bool> DeleteUserAsync(Guid id)
+        public async Task<Result> DeleteUserAsync(Guid id)
         {
             var user = await _userRepository.GetByIdAsync(id);
-            if (user == null) return false;
+            if (user == null) return UserErrors.NotFound;
 
             await _userRepository.DeleteAsync(id);
-            return true;
+            return Result.Success();
         }
 
-        public async Task<bool> ValidatePasswordAsync(string userName, string password)
+        public async Task<Result> ValidatePasswordAsync(string userName, string password)
         {
             var user = await _userRepository.GetByUserNameAsync(userName);
-            if (user == null) return false;
+            if (user == null) return UserErrors.InvalidCredentials;
 
-            return _passwordService.VerifyPassword(password, user.PasswordHash);
+            bool isValid = _passwordService.VerifyPassword(password, user.PasswordHash);
+            if (!isValid) return UserErrors.InvalidCredentials;
+
+            return Result.Success();
         }
 
         private static UserResponse MapToResponse(User user)

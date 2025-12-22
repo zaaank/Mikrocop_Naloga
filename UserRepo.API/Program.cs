@@ -71,9 +71,10 @@ app.UseSerilogRequestLogging(); // Optional, but good for default request loggin
 
 app.UseHttpsRedirection();
 
-// Custom Middleware
+// Custom
 app.UseMiddleware<ApiKeyAuthMiddleware>();
 app.UseMiddleware<LoggingMiddleware>();
+
 
 app.UseAuthorization();
 

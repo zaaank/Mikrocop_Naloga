@@ -22,18 +22,12 @@ A RESTful API service for managing users, secure with API Keys and following Cle
 
 You have two options to set up the database:
 
-**Option A: EF Core Migrations (Recommended)**
+**EF Core Migrations (Recommended)**
 If you have `dotnet-ef` installed:
 ```bash
 dotnet tool install --global dotnet-ef
 dotnet ef migrations add InitialCreate --project UserRepo.Infrastructure --startup-project UserRepo.API --output-dir Persistence/Migrations
 dotnet ef database update --project UserRepo.Infrastructure --startup-project UserRepo.API
-```
-
-**Option B: SQL Script**
-Run the provided `setup_db.sql` script against your SQL Server instance to create the database and tables manually.
-```bash
-sqlcmd -S (localdb)\mssqllocaldb -i setup_db.sql
 ```
 
 ### 2. Configuration
@@ -42,14 +36,21 @@ Update `UserRepo.API/appsettings.json` if your SQL Server instance differs from 
 
 ### 3. API Keys
 
-The system uses API Key authentication. A default client is seeded in the SQL script:
-- **Client Name**: TestClient
-- **API Key**: `secret123`
-- **Header**: `X-Api-Key: secret123`
+The system uses API Key authentication. A default client is seeded via migrations ( For testing purposes only ):
+- **Client Name**: DefaultClient
+- **API Key**: `be054320-302a-430c-9602-535352c713b1`
+- **Header Name**: `X-Api-Key`
 
-You can add more clients by inserting into the `Clients` table.
+### 4. Using Swagger with API Key
 
-## Running the Service
+1.  Run the application.
+2.  Navigate to `https://localhost:7113/swagger/index.html` (check console for actual port).
+3.  Click the **Authorize** button (top right).
+4.  In the value field, enter the API Key: `be054320-302a-430c-9602-535352c713b1`.
+5.  Click **Authorize** and then **Close**.
+6.  You can now call the protected endpoints.
+
+## Running the Service ( In VS just set .API as startup project and press F5 )
 
 ```bash
 cd UserRepo.API
@@ -71,7 +72,7 @@ Log location can be configured in `appsettings.json` under `Serilog:WriteTo:Args
 **Create User**
 ```http
 POST /api/users
-X-Api-Key: secret123
+ApiKey: be054320-302a-430c-9602-535352c713b1
 Content-Type: application/json
 
 {
@@ -85,7 +86,7 @@ Content-Type: application/json
 **Validate Password**
 ```http
 POST /api/users/validate-password
-X-Api-Key: secret123
+ApiKey-Key: be054320-302a-430c-9602-535352c713b1
 Content-Type: application/json
 
 {

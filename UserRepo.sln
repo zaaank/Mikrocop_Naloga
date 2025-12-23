@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserRepo.Infrastructure", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserRepo.Contracts", "UserRepo.Contracts\UserRepo.Contracts.csproj", "{065D9F5D-B953-45B4-A320-BAF6BA897330}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserRepo.UnitTests", "UserRepo.UnitTests\UserRepo.UnitTests.csproj", "{D93ACF19-B40B-4320-BDC8-88F146939D7B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -83,6 +85,18 @@ Global
 		{065D9F5D-B953-45B4-A320-BAF6BA897330}.Release|x64.Build.0 = Release|Any CPU
 		{065D9F5D-B953-45B4-A320-BAF6BA897330}.Release|x86.ActiveCfg = Release|Any CPU
 		{065D9F5D-B953-45B4-A320-BAF6BA897330}.Release|x86.Build.0 = Release|Any CPU
+		{D93ACF19-B40B-4320-BDC8-88F146939D7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D93ACF19-B40B-4320-BDC8-88F146939D7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D93ACF19-B40B-4320-BDC8-88F146939D7B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D93ACF19-B40B-4320-BDC8-88F146939D7B}.Debug|x64.Build.0 = Debug|Any CPU
+		{D93ACF19-B40B-4320-BDC8-88F146939D7B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D93ACF19-B40B-4320-BDC8-88F146939D7B}.Debug|x86.Build.0 = Debug|Any CPU
+		{D93ACF19-B40B-4320-BDC8-88F146939D7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D93ACF19-B40B-4320-BDC8-88F146939D7B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D93ACF19-B40B-4320-BDC8-88F146939D7B}.Release|x64.ActiveCfg = Release|Any CPU
+		{D93ACF19-B40B-4320-BDC8-88F146939D7B}.Release|x64.Build.0 = Release|Any CPU
+		{D93ACF19-B40B-4320-BDC8-88F146939D7B}.Release|x86.ActiveCfg = Release|Any CPU
+		{D93ACF19-B40B-4320-BDC8-88F146939D7B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -91,4 +105,3 @@ Global
 		SolutionGuid = {72F1AA29-FE1B-4CF9-8FD0-5CA70F5BA229}
 	EndGlobalSection
 EndGlobal
-

@@ -10,6 +10,10 @@ using UserRepo.Domain.Interfaces;
 
 namespace UserRepo.Application.Services
 {
+    /// <summary>
+    /// Service for handling User-related business logic.
+    /// Acts as an intermediary between the API controllers and the repositories.
+    /// </summary>
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
@@ -21,8 +25,13 @@ namespace UserRepo.Application.Services
             _passwordService = passwordService;
         }
 
+        /// <summary>
+        /// Logic to create a new user. 
+        /// Checks for duplicates and hashes the password before saving.
+        /// </summary>
         public async Task<Result<UserResponse>> CreateUserAsync(CreateUserRequest request)
         {
+            // Flow: Check if exists -> Hash Password -> Create Entity -> Save -> Map to Response
             if (await _userRepository.GetByUserNameAsync(request.UserName) != null)
             {
                 return UserErrors.DuplicateUsername;
@@ -65,6 +74,7 @@ namespace UserRepo.Application.Services
             var user = await _userRepository.GetByIdAsync(id);
             if (user == null) return UserErrors.NotFound;
 
+            // Mapping from DTO to existing Entity
             user.FullName = request.FullName;
             user.Email = request.Email;
             user.MobileNumber = request.MobileNumber;
@@ -85,6 +95,10 @@ namespace UserRepo.Application.Services
             return Result.Success();
         }
 
+        /// <summary>
+        /// Validates user credentials.
+        /// Does NOT use exceptions for failures, instead returns a Result.
+        /// </summary>
         public async Task<Result> ValidatePasswordAsync(string userName, string password)
         {
             var user = await _userRepository.GetByUserNameAsync(userName);
@@ -96,6 +110,10 @@ namespace UserRepo.Application.Services
             return Result.Success();
         }
 
+        /// <summary>
+        /// Helper to transform Domain Entity to Response DTO.
+        /// This keeps the domain internal and only exposes necessary data.
+        /// </summary>
         private static UserResponse MapToResponse(User user)
         {
             return new UserResponse(

@@ -10,7 +10,8 @@ using UserRepo.Infrastructure.Persistence.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure Serilog
+// --- 1. CONFIGURATION: Logging ---
+// We use Serilog for powerful, structured logging to files.
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .Enrich.FromLogContext()
@@ -18,11 +19,14 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog();
 
-// Add services to the container.
+// --- 2. SERVICES: Register Components (Dependency Injection) ---
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
+// Configure Swagger for API Testing and Documentation
 builder.Services.AddSwaggerGen(c =>
 {
+    // Define the security scheme (API Key in Header)
     c.AddSecurityDefinition("ApiKey", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
@@ -31,6 +35,7 @@ builder.Services.AddSwaggerGen(c =>
         Description = "API Key needed to access the endpoints. Enter the API Key only."
     });
 
+    // Make Swagger use this security scheme for all requests
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
@@ -47,12 +52,12 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// DbContext
+// Configure the Database Connection
 builder.Services.AddDbContext<UserRepoDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
-    b => b.MigrationsAssembly("UserRepo.Infrastructure"))); // Ensure migrations are in Infrastructure
+    b => b.MigrationsAssembly("UserRepo.Infrastructure")));
 
-// Application Services
+// Register our business logic and data access layers
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IClientRepository, ClientRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -60,24 +65,26 @@ builder.Services.AddScoped<IPasswordService, PasswordService>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// --- 3. MIDDLEWARE: Configure the Request Pipeline ---
+// The order here matters!
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseSerilogRequestLogging(); // Optional, but good for default request logging. Our custom middleware does specific fields.
+// Built-in Serilog request logging (captures basic HTTP info)
+app.UseSerilogRequestLogging(); 
 
 app.UseHttpsRedirection();
 
-// Custom
-app.UseMiddleware<ApiKeyAuthMiddleware>();
-app.UseMiddleware<LoggingMiddleware>();
-
+// Custom Middleware
+app.UseMiddleware<ApiKeyAuthMiddleware>(); // Authenticates the request via Header
+app.UseMiddleware<LoggingMiddleware>();    // Logs details about the call (who, when, what)
 
 app.UseAuthorization();
-
 app.MapControllers();
 
+// Start the application
 app.Run();

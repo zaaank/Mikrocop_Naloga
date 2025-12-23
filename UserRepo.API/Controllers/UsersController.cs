@@ -7,6 +7,10 @@ using UserRepo.Contracts.Responses;
 
 namespace UserRepo.API.Controllers
 {
+    /// <summary>
+    /// Exposes endpoints for managing Users.
+    /// Inherits from ApiController for consistent Result handling.
+    /// </summary>
     public class UsersController : ApiController
     {
         private readonly IUserService _userService;
@@ -16,6 +20,9 @@ namespace UserRepo.API.Controllers
             _userService = userService;
         }
 
+        /// <summary>
+        /// Registers a new user.
+        /// </summary>
         [HttpPost]
         public async Task<ActionResult<UserResponse>> CreateUser([FromBody] CreateUserRequest request)
         {
@@ -23,24 +30,36 @@ namespace UserRepo.API.Controllers
             
             if (result.IsSuccess)
             {
+                // Returns 201 Created with the location of the new resource.
                 return CreatedAtAction(nameof(GetUser), new { id = result.Value.Id }, result.Value);
             }
 
+            // Maps the error result to a proper HTTP status code (Conflict, BadRequest, etc.)
             return HandleFailure(result);
         }
 
+        /// <summary>
+        /// Retrieves user details by ID.
+        /// </summary>
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<UserResponse>> GetUser(Guid id)
         {
+            // HandleResult automatically returns 200 OK or 404 Not Found.
             return HandleResult(await _userService.GetUserAsync(id));
         }
 
+        /// <summary>
+        /// Updates an existing user's information.
+        /// </summary>
         [HttpPut("{id:guid}")]
         public async Task<ActionResult<UserResponse>> UpdateUser(Guid id, [FromBody] UpdateUserRequest request)
         {
             return HandleResult(await _userService.UpdateUserAsync(id, request));
         }
 
+        /// <summary>
+        /// Deletes a user from the system.
+        /// </summary>
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteUser(Guid id)
         {
@@ -54,6 +73,9 @@ namespace UserRepo.API.Controllers
             return HandleFailure(result);
         }
 
+        /// <summary>
+        /// Checks if the provided username and password match.
+        /// </summary>
         [HttpPost("validate-password")]
         public async Task<IActionResult> ValidatePassword([FromBody] ValidatePasswordRequest request)
         {

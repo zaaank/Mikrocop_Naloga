@@ -6,6 +6,10 @@ using UserRepo.Domain.Interfaces;
 
 namespace UserRepo.Infrastructure.Persistence.Repositories
 {
+    /// <summary>
+    /// Implementation of IUserRepository using Entity Framework Core.
+    /// This is where the actual database queries happen.
+    /// </summary>
     public class UserRepository : IUserRepository
     {
         private readonly UserRepoDbContext _context;
@@ -17,6 +21,7 @@ namespace UserRepo.Infrastructure.Persistence.Repositories
 
         public async Task<User?> GetByIdAsync(Guid id)
         {
+            // FindAsync is efficient as it checks the local tracker first.
             return await _context.Users.FindAsync(id);
         }
 

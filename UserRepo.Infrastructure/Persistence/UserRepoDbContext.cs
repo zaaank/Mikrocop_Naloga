@@ -4,6 +4,10 @@ using UserRepo.Domain.Entities;
 
 namespace UserRepo.Infrastructure.Persistence
 {
+    /// <summary>
+    /// Gateway to the SQL database using Entity Framework Core.
+    /// Maps our Domain Entities to Database Tables.
+    /// </summary>
     public class UserRepoDbContext : DbContext
     {
         public UserRepoDbContext(DbContextOptions<UserRepoDbContext> options)
@@ -11,6 +15,7 @@ namespace UserRepo.Infrastructure.Persistence
         {
         }
 
+        // Tables
         public DbSet<User> Users { get; set; }
         public DbSet<Client> Clients { get; set; }
 
@@ -18,7 +23,7 @@ namespace UserRepo.Infrastructure.Persistence
         {
             base.OnModelCreating(modelBuilder);
             
-            // Uniqueness constraints
+            // Configuration for User table
             modelBuilder.Entity<User>()
                 .HasIndex(u => u.UserName)
                 .IsUnique();
@@ -27,11 +32,12 @@ namespace UserRepo.Infrastructure.Persistence
                 .HasIndex(u => u.Email)
                 .IsUnique();
 
+            // Configuration for Client table
             modelBuilder.Entity<Client>()
                 .HasIndex(c => c.ApiKey)
                 .IsUnique();
 
-            // Seed Client
+            // Seed Client (Development/Testing Data)
             modelBuilder.Entity<Client>().HasData(
                 new Client
                 {
@@ -39,7 +45,7 @@ namespace UserRepo.Infrastructure.Persistence
                     Name = "DefaultClient",
                     ApiKey = "be054320-302a-430c-9602-535352c713b1",
                     IsActive = true,
-                    CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc) // Fixed date for deterministic migrations
+                    CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                 }
             );
         }

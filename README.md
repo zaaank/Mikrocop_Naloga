@@ -20,26 +20,23 @@ A RESTful API service for managing users, secure with API Keys and following Cle
 
 ### 1. Database Setup
 
-You have two options to set up the database:
-
 **EF Core Migrations (Recommended)**
 If you have `dotnet-ef` installed:
 ```bash
 dotnet tool install --global dotnet-ef
-dotnet ef migrations add InitialCreate --project UserRepo.Infrastructure --startup-project UserRepo.API --output-dir Persistence/Migrations
 dotnet ef database update --project UserRepo.Infrastructure --startup-project UserRepo.API
 ```
 
 ### 2. Configuration
 
-Update `UserRepo.API/appsettings.json` if your SQL Server instance differs from `(localdb)\mssqllocaldb`.
+Update `UserRepo.API/appsettings.json` if your SQL Server instance differs from `localhost\\sql2019`.
 
 ### 3. API Keys
 
 The system uses API Key authentication. A default client is seeded via migrations ( For testing purposes only ):
 - **Client Name**: DefaultClient
 - **API Key**: `be054320-302a-430c-9602-535352c713b1`
-- **Header Name**: `X-Api-Key`
+- **Header Name**: `ApiKey`
 
 ### 4. Using Swagger with API Key
 
